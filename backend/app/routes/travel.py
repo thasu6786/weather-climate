@@ -1,19 +1,23 @@
-from fastapi import APIRouter, Query
-from app.services.travel_service import get_travel_recommendations, generate_itinerary
+from fastapi import APIRouter, Query, Body
+from app.services.planner_service import generate_smart_planner_proposals
 
 router = APIRouter(prefix="/api", tags=["travel"])
 
 
-@router.get("/travel")
-async def travel(city: str = Query(None, description="Optional city filter")):
-    data = get_travel_recommendations(city)
-    return {"status": "success", "data": data}
-
-
-@router.get("/itinerary")
-async def itinerary(
-    city: str = Query("Jaipur", description="City name"),
-    days: int = Query(3, ge=1, le=7, description="Number of days"),
+@router.post("/travel/planner")
+async def intelligent_travel_planner(
+    city: str = Body(..., embed=True),
+    days: int = Body(3, embed=True),
+    budget: str = Body("Moderate", embed=True),
+    travel_type: str = Body("Relax", embed=True)
 ):
-    data = generate_itinerary(city, days)
-    return {"status": "success", "data": data}
+    """
+    Core AI engine endpoint.
+    Retrieves the User Request Plan, and generates an Alternative AI Plan.
+    Computes Costs, Itineraries, Places, and Contextual Reasonings.
+    """
+    try:
+        data = await generate_smart_planner_proposals(city, days, budget, travel_type)
+        return {"status": "success", "data": data}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

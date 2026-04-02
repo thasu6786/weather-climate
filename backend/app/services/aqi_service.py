@@ -60,7 +60,15 @@ async def get_aqi_by_city(city: str) -> dict:
 
     city_data = _find_city(city)
     if not city_data:
-        return _empty_aqi(city)
+        try:
+            from app.services.weather_service import get_weather_by_city
+            w = await get_weather_by_city(city)
+            if w.get("lat") != 0 or w.get("lon") != 0:
+                city_data = {"lat": w["lat"], "lon": w["lon"]}
+            else:
+                return _empty_aqi(city)
+        except Exception:
+            return _empty_aqi(city)
 
     if not OPENWEATHER_API_KEY or OPENWEATHER_API_KEY == "your_openweather_api_key_here":
         return _empty_aqi(city)
@@ -85,6 +93,38 @@ async def get_aqi_by_city(city: str) -> dict:
         logger.error(f"[AQI] Exception {city}: {e}")
 
     return _empty_aqi(city)
+
+
+async def get_aqi_by_coords(lat: float, lon: float, city_name: str = "Location") -> dict:
+    key = f"aqi_{lat}_{lon}"
+    entry = _cache.get(key)
+    if entry:
+        data, ts = entry
+        if time.time() - ts < CACHE_TTL:
+            return data
+
+    if not OPENWEATHER_API_KEY or OPENWEATHER_API_KEY == "your_openweather_api_key_here":
+        return _empty_aqi(city_name)
+
+    if not httpx:
+        return _empty_aqi(city_name)
+
+    try:
+        client = _get_client()
+        resp = await client.get(
+            f"{API_BASE_URL}/data/2.5/air_pollution",
+            params={"lat": lat, "lon": lon, "appid": OPENWEATHER_API_KEY},
+        )
+        if resp.status_code == 200:
+            result = _format_aqi(resp.json(), city_name, {"lat": lat, "lon": lon})
+            _cache[key] = (result, time.time())
+            return result
+        else:
+            logger.error(f"[AQI] {resp.status_code} for coords {lat},{lon}")
+    except Exception as e:
+        logger.error(f"[AQI] Exception coords {lat},{lon}: {e}")
+
+    return _empty_aqi(city_name)
 
 
 # ── Parallel AQI for all cities ───────────────────────────────────────────────

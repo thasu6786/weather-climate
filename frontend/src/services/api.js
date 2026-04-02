@@ -35,13 +35,14 @@ export const api = {
   getInsights: () => fetchAPI('/insights'),
   runSimulation: (params) => fetchAPI('/simulation', { method: 'POST', body: JSON.stringify(params) }),
 
-  // Travel
-  getTravel: (city) => fetchAPI(`/travel${city ? `?city=${encodeURIComponent(city)}` : ''}`),
-  getItinerary: (city, days = 3) => fetchAPI(`/itinerary?city=${encodeURIComponent(city)}&days=${days}`),
+  // Intelligent Travel Planner
+  getSmartPlanner: (payload) => fetchAPI('/travel/planner', { method: 'POST', body: JSON.stringify(payload) }),
 
   // Map
   getMapData: () => fetchAPI('/map-data'),
   getCities: () => fetchAPI('/cities'),
+  searchLocation: (q) => fetchAPI(`/location/search?q=${encodeURIComponent(q)}`),
+  exploreLocation: (lat, lon, city) => fetchAPI(`/location/explore?lat=${lat}&lon=${lon}&city=${encodeURIComponent(city || 'Unknown')}`),
 
   // Expenses
   getExpenses: (mode) => fetchAPI(`/expenses${mode ? `?mode=${mode}` : ''}`),

@@ -174,8 +174,8 @@ export default function ExpenseModule() {
             onClick={() => setShowAddForm(false)}>
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              style={{ background: '#1C1C24', borderRadius: '20px', padding: '28px', width: '440px',
-                border: '1px solid rgba(255,255,255,0.06)' }}>
+              style={{ background: '#1C1C24', borderRadius: '20px', padding: '28px', width: '100%', maxWidth: '440px',
+                border: '1px solid rgba(255,255,255,0.06)', margin: '0 20px', boxSizing: 'border-box' }}>
               <h3 style={{ marginBottom: '20px' }}>Add {cfg.label} Expense</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <input placeholder="Description" value={form.description}
@@ -212,7 +212,7 @@ export default function ExpenseModule() {
             onClick={() => setShowQR(null)}>
             <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              style={{ background: '#1C1C24', borderRadius: '24px', padding: '32px', width: '360px',
+              style={{ background: '#1C1C24', borderRadius: '24px', padding: '32px', width: '100%', maxWidth: '360px', margin: '0 20px', boxSizing: 'border-box',
                 border: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
               <QrCode size={32} color="#A855F7" style={{ marginBottom: '16px' }} />
               <h3 style={{ marginBottom: '8px' }}>QR Payment</h3>
@@ -239,7 +239,7 @@ export default function ExpenseModule() {
 
       {/* Mode-Specific Dashboard */}
       {loading ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+        <div className="grid-3" style={{ gap: '20px' }}>
           {[1,2,3].map(i => <div key={i} className="skeleton" style={{ height: '160px', borderRadius: '20px' }} />)}
         </div>
       ) : data ? (
@@ -273,7 +273,7 @@ function SoloDashboard({ data }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Budget Overview Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+      <div className="grid-4" style={{ gap: '16px' }}>
         <StatCard icon={DollarSign} label="Total Spent" value={`₹${data.total?.toLocaleString()}`}
           color="#EF4444" sub={`${data.count} expenses`} />
         <StatCard icon={Target} label="Budget" value={`₹${budget?.toLocaleString()}`}
@@ -323,7 +323,7 @@ function SoloDashboard({ data }) {
       )}
 
       {/* Charts Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="grid-2" style={{ gap: '20px' }}>
         {/* Category Breakdown Pie */}
         <div className="glass-card">
           <h4 style={{ marginBottom: '16px' }}>Category Breakdown</h4>
@@ -406,7 +406,7 @@ function FriendsDashboard({ data, onShowQR }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Group Stats Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+      <div className="grid-4" style={{ gap: '16px' }}>
         <StatCard icon={Users} label="Group Members" value={data.members?.length || 0}
           color="#3B82F6" sub="active members" />
         <StatCard icon={DollarSign} label="Total Group Spend" value={`₹${data.total_group_spend?.toLocaleString() || 0}`}
@@ -418,7 +418,7 @@ function FriendsDashboard({ data, onShowQR }) {
       </div>
 
       {/* Balance Table + Settlement */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="grid-2" style={{ gap: '20px' }}>
         {/* Member Balances */}
         <div className="glass-card">
           <h4 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -466,27 +466,34 @@ function FriendsDashboard({ data, onShowQR }) {
               {settlements.map((t, i) => (
                 <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px',
+                  style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '14px',
                     background: 'rgba(168,85,247,0.06)', borderRadius: '12px', border: '1px solid rgba(168,85,247,0.12)' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#EF444420',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700,
-                    fontSize: '0.8rem', color: '#EF4444' }}>{t.from?.[0]}</div>
-                  <div style={{ flex: 1 }}>
-                    <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{t.from}</span>
-                    <span style={{ color: '#65657A', margin: '0 8px' }}>pays</span>
-                    <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{t.to}</span>
+                  
+                  {/* Left Side: Avatar & Name */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 min-content' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#EF444420',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, flexShrink: 0,
+                      fontSize: '0.8rem', color: '#EF4444' }}>{t.from?.[0]}</div>
+                    <div style={{ whiteSpace: 'nowrap' }}>
+                      <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{t.from}</span>
+                      <span style={{ color: '#65657A', margin: '0 6px' }}>pays</span>
+                      <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{t.to}</span>
+                    </div>
                   </div>
-                  <ArrowRight size={16} color="#A855F7" />
-                  <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#A855F7', fontSize: '1rem' }}>
-                    ₹{t.amount?.toLocaleString()}
+
+                  {/* Right Side: Amount & Button */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#A855F7', fontSize: '1rem', whiteSpace: 'nowrap' }}>
+                      ₹{t.amount?.toLocaleString()}
+                    </div>
+                    <button onClick={() => onShowQR({ from: t.from, to: t.to, amount: t.amount })}
+                      style={{ padding: '6px 12px', borderRadius: '8px', flexShrink: 0,
+                        background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)',
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
+                        color: '#A855F7', fontSize: '0.75rem', fontWeight: 600 }}>
+                      <QrCode size={14} /> Pay
+                    </button>
                   </div>
-                  <button onClick={() => onShowQR({ from: t.from, to: t.to, amount: t.amount })}
-                    style={{ marginLeft: '8px', padding: '6px 10px', borderRadius: '8px',
-                      background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)',
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px',
-                      color: '#A855F7', fontSize: '0.7rem', fontWeight: 600 }}>
-                    <QrCode size={12} /> Pay
-                  </button>
                 </motion.div>
               ))}
               <div style={{ marginTop: '8px', padding: '10px 14px', background: 'rgba(6,214,160,0.06)',
@@ -499,7 +506,7 @@ function FriendsDashboard({ data, onShowQR }) {
       </div>
 
       {/* Category Breakdown + Member Contribution Chart */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="grid-2" style={{ gap: '20px' }}>
         <div className="glass-card">
           <h4 style={{ marginBottom: '16px' }}>Group Spending by Category</h4>
           <div style={{ height: '260px' }}>
@@ -611,7 +618,7 @@ function FamilyDashboard({ data }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Family Budget Overview */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+      <div className="grid-4" style={{ gap: '16px' }}>
         <StatCard icon={Home} label="Family Budget" value={`₹${budget?.toLocaleString()}`}
           color="#A855F7" sub="monthly budget" />
         <StatCard icon={DollarSign} label="Total Spent" value={`₹${data.total?.toLocaleString()}`}
@@ -624,7 +631,7 @@ function FamilyDashboard({ data }) {
       </div>
 
       {/* Budget Progress + Alerts */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
+      <div className="grid-split-2-1" style={{ gap: '20px' }}>
         <div className="glass-card">
           <h4 style={{ marginBottom: '16px' }}>Family Budget Progress</h4>
           <div style={{ height: '12px', background: '#252530', borderRadius: '6px', overflow: 'hidden', marginBottom: '20px' }}>
@@ -682,7 +689,7 @@ function FamilyDashboard({ data }) {
       </div>
 
       {/* Charts: Category + Trend */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="grid-2" style={{ gap: '20px' }}>
         <div className="glass-card">
           <h4 style={{ marginBottom: '16px' }}>Family Spending by Category</h4>
           <div style={{ height: '280px' }}>

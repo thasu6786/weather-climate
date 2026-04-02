@@ -8,6 +8,7 @@ import MapView from './pages/MapView';
 import CityPage from './pages/CityPage';
 import TravelPlanner from './pages/TravelPlanner';
 import ExpenseModule from './pages/ExpenseModule';
+import Landing3D from './pages/Landing3D';
 
 function AppLayout() {
   return (
@@ -16,7 +17,7 @@ function AppLayout() {
       <main className="main-content">
         <div className="page-container">
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/overview" element={<HomePage />} />
             <Route path="/dashboard" element={<ClimateDashboard />} />
             <Route path="/visualization" element={<VisualizationLab />} />
             <Route path="/map" element={<MapView />} />
@@ -34,9 +35,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <AppProvider>
-        <AppLayout />
+        <Routes>
+          {/* True Fullscreen Landing Page bypassing Header Framework */}
+          <Route path="/" element={<Landing3D />} />
+          {/* Wildcard Application Infrastructure matching the old routing */}
+          <Route path="/*" element={<AppLayout />} />
+        </Routes>
       </AppProvider>
     </BrowserRouter>
   );
 }
-

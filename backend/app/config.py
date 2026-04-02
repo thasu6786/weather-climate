@@ -8,6 +8,7 @@ except ImportError:
 
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 API_BASE_URL = "https://api.openweathermap.org"
 CACHE_TTL = 300  # 5 minutes
 

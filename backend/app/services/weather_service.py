@@ -117,6 +117,27 @@ async def get_weather_by_coords(lat: float, lon: float) -> dict:
     return _empty_weather("Your Location", {"lat": lat, "lon": lon, "state": "India"})
 
 
+async def search_locations(query: str) -> list:
+    """Uses OpenWeather Geocoding API to predict locations"""
+    if not OPENWEATHER_API_KEY or OPENWEATHER_API_KEY == "your_openweather_api_key_here":
+        return []
+    if not httpx:
+        return []
+
+    try:
+        client = _get_client()
+        resp = await client.get(
+            f"{API_BASE_URL}/geo/1.0/direct",
+            params={"q": query, "limit": 5, "appid": OPENWEATHER_API_KEY},
+        )
+        if resp.status_code == 200:
+            return resp.json()
+    except Exception as e:
+        logger.error(f"[Geocode] Exception for {query}: {e}")
+    return []
+
+
+
 # ── ALL cities — parallel fetch ──────────────────────────────────────────────
 
 async def get_all_cities_weather() -> list:
